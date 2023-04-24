@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "elixirpb.proto";
-
 package Extreme.Messages;
 
 enum OperationResult
