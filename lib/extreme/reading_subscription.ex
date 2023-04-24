@@ -52,7 +52,7 @@ defmodule Extreme.ReadingSubscription do
 
   @impl true
   def handle_call(:unsubscribe, from, state) do
-    :ok = Shared.unsubscribe(from, state)
+    :noop = Shared.unsubscribe(from, state)
     {:noreply, state}
   end
 
@@ -100,15 +100,15 @@ defmodule Extreme.ReadingSubscription do
     {:noreply, %{state | status: :subscribed, buffered_messages: []}}
   end
 
-  defp _process_read_response({:error, :stream_deleted, _}, state) do
+  defp _process_read_response({:error, :StreamDeleted, _}, state) do
     Logger.error(fn -> "Stream is hard deleted" end)
 
-    send(state.subscriber, {:extreme, :error, :stream_deleted, state.read_params.stream})
+    send(state.subscriber, {:extreme, :error, :StreamDeleted, state.read_params.stream})
     RequestManager._unregister_subscription(state.base_name, state.correlation_id)
     {:stop, {:shutdown, :stream_deleted}, state}
   end
 
-  defp _process_read_response({:error, :no_stream, _}, state) do
+  defp _process_read_response({:error, :NoStream, _}, state) do
     Logger.warn(fn -> "Stream doesn't exist yet" end)
 
     {:extreme, :warn, :stream_soft_deleted, state.read_params.stream}

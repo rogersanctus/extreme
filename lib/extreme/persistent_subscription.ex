@@ -203,7 +203,7 @@ defmodule Extreme.PersistentSubscription do
           pid(),
           event() | event_id() | [event() | event_id()],
           binary(),
-          :unknown | :park | :retry | :skip | :stop,
+          :Unknown | :Park | :Retry | :Skip | :Stop,
           String.t()
         ) :: :ok
   def nack(subscription, event, correlation_id, action, message \\ "")
@@ -237,7 +237,7 @@ defmodule Extreme.PersistentSubscription do
 
   @impl true
   def handle_call(:unsubscribe, from, state) do
-    :ok = Shared.unsubscribe(from, state)
+    :noop = Shared.unsubscribe(from, state)
     {:noreply, state}
   end
 

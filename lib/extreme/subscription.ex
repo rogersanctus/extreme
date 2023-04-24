@@ -24,8 +24,9 @@ defmodule Extreme.Subscription do
   @doc """
   Calls `server` with :unsubscribe message. `server` can be either `Subscription` or `ReadingSubscription`.
   """
-  def unsubscribe(server),
-    do: GenServer.call(server, :unsubscribe)
+  def unsubscribe(server) do
+    GenServer.call(server, :unsubscribe)
+  end
 
   @impl true
   def init({base_name, correlation_id, subscriber, stream, resolve_link_tos, ack_timeout}) do
@@ -46,7 +47,7 @@ defmodule Extreme.Subscription do
 
   @impl true
   def handle_call(:unsubscribe, from, state) do
-    :ok = Shared.unsubscribe(from, state)
+    :noop = Shared.unsubscribe(from, state)
     {:noreply, state}
   end
 
