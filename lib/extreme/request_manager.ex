@@ -6,7 +6,7 @@ defmodule Extreme.RequestManager do
   @read_only_message_types [
     Extreme.Messages.ReadEvent,
     Extreme.Messages.ReadStreamEvents,
-    Extreme.Messages.ReadStreamEventsBackward,
+    :ReadStreamEventsBackward,
     Extreme.Messages.ReadAllEvents,
     Extreme.Messages.ConnectToPersistentSubscription,
     Extreme.Messages.SubscribeToStream,
@@ -65,6 +65,12 @@ defmodule Extreme.RequestManager do
     base_name
     |> _name()
     |> GenServer.call({:ping, correlation_id})
+  end
+
+  def read_events_backward(base_name, stream, start, count, correlation_id) do
+    base_name
+    |> _name()
+    |> GenServer.call({:read_events_backward, stream, start, count, correlation_id})
   end
 
   def execute(base_name, message, correlation_id, timeout \\ 5_000) do
@@ -137,6 +143,27 @@ defmodule Extreme.RequestManager do
 
     _in_task(state.base_name, fn ->
       {:ok, message} = Request.prepare(:ping, correlation_id)
+      :ok = Connection.push(state.base_name, message)
+    end)
+
+    {:noreply, state}
+  end
+
+  def handle_call(
+        {:read_events_backward, stream, start, count, correlation_id},
+        from,
+        %State{} = state
+      ) do
+    state = %State{state | requests: Map.put(state.requests, correlation_id, from)}
+
+    _in_task(state.base_name, fn ->
+      {:ok, message} =
+        Request.prepare(:ReadStreamEventsBackward, state.credentials, correlation_id, %{
+          stream: stream,
+          start: start,
+          count: count
+        })
+
       :ok = Connection.push(state.base_name, message)
     end)
 
@@ -316,7 +343,7 @@ defmodule Extreme.RequestManager do
   defp _process_server_message(subscription, message, _state),
     do: GenServer.cast(subscription, {:process_push, fn -> Response.parse(message) end})
 
-  defp _respond_on({:client_identified, _correlation_id}, _),
+  defp _respond_on({:ClientIdentified, _correlation_id}, _),
     do: :ok
 
   defp _respond_on({:heartbeat_request, correlation_id}, base_name),
@@ -325,11 +352,11 @@ defmodule Extreme.RequestManager do
   defp _respond_on({:pong, correlation_id}, base_name),
     do: :ok = respond_with_server_message(base_name, correlation_id, :pong)
 
-  defp _respond_on({:error, :not_authenticated, correlation_id}, base_name),
-    do: :ok = respond_with_server_message(base_name, correlation_id, {:error, :not_authenticated})
+  defp _respond_on({:error, :NotAuthenticated, correlation_id}, base_name),
+    do: :ok = respond_with_server_message(base_name, correlation_id, {:error, :NotAuthenticated})
 
-  defp _respond_on({:error, :bad_request, correlation_id}, base_name),
-    do: :ok = respond_with_server_message(base_name, correlation_id, {:error, :bad_request})
+  defp _respond_on({:error, :BadRequest, correlation_id}, base_name),
+    do: :ok = respond_with_server_message(base_name, correlation_id, {:error, :BadRequest})
 
   defp _respond_on({_auth, correlation_id, message}, base_name) do
     response = Response.reply(message, correlation_id)
