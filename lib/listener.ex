@@ -151,16 +151,6 @@ defmodule Extreme.Listener do
          }}
       end
 
-      defp _read_events_backward(stream, start \\ -1, count \\ 1) do
-        Extreme.Messages.ReadStreamEventsBackward.new(
-          event_stream_id: stream,
-          from_event_number: start,
-          max_count: count,
-          resolve_link_tos: true,
-          require_master: false
-        )
-      end
-
       def caught_up, do: Logger.debug(fn -> "We are up to date" end)
       def register_patching_start(_, _, _), do: {:error, :not_implemented}
       def patching_done(_), do: {:error, :not_implemented}
