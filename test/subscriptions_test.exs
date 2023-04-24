@@ -116,7 +116,7 @@ defmodule ExtremeSubscriptionsTest do
     test "subscription to non existing stream is success" do
       # subscribe to stream
       stream = Helpers.random_stream_name()
-      {:error, :no_stream, _} = TestConn.execute(Helpers.read_events(stream))
+      {:error, :NoStream, _} = TestConn.execute(Helpers.read_events(stream))
       {:ok, subscriber} = Subscriber.start_link()
       {:ok, subscription} = TestConn.subscribe_to(stream, subscriber)
 
@@ -150,7 +150,7 @@ defmodule ExtremeSubscriptionsTest do
       {:ok, %ExMsg.DeleteStreamCompleted{}} =
         TestConn.execute(Helpers.delete_stream(stream, false))
 
-      {:error, :no_stream, %ExMsg.ReadStreamEventsCompleted{}} =
+      {:error, :NoStream, %ExMsg.ReadStreamEventsCompleted{}} =
         TestConn.execute(Helpers.read_events(stream))
 
       # subscribe to stream
@@ -194,7 +194,7 @@ defmodule ExtremeSubscriptionsTest do
       {:ok, %ExMsg.DeleteStreamCompleted{}} =
         TestConn.execute(Helpers.delete_stream(stream, false))
 
-      assert {:error, :no_stream, %ExMsg.ReadStreamEventsCompleted{}} =
+      assert {:error, :NoStream, %ExMsg.ReadStreamEventsCompleted{}} =
                TestConn.execute(Helpers.read_events(stream))
 
       # check if events came in correct order.
@@ -227,7 +227,7 @@ defmodule ExtremeSubscriptionsTest do
       {:ok, %ExMsg.DeleteStreamCompleted{}} =
         TestConn.execute(Helpers.delete_stream(stream, true))
 
-      assert {:error, :stream_deleted, %ExMsg.ReadStreamEventsCompleted{}} =
+      assert {:error, :StreamDeleted, %ExMsg.ReadStreamEventsCompleted{}} =
                TestConn.execute(Helpers.read_events(stream))
 
       # check if events came in correct order.
@@ -262,7 +262,7 @@ defmodule ExtremeSubscriptionsTest do
 
       # unsubscribe from stream
       Helpers.unsubscribe(TestConn, subscription)
-      assert_receive {:extreme, :unsubscribed}
+      assert_receive {:extreme, :Unsubscribed}
 
       # write more events after unsubscribe
       events2 =
@@ -282,7 +282,7 @@ defmodule ExtremeSubscriptionsTest do
       sleep = 5_001
       # subscribe to stream
       stream = Helpers.random_stream_name()
-      {:error, :no_stream, _} = TestConn.execute(Helpers.read_events(stream))
+      {:error, :NoStream, _} = TestConn.execute(Helpers.read_events(stream))
       {:ok, subscriber} = Subscriber.start_link()
       {:ok, subscription} = TestConn.subscribe_to(stream, subscriber, true, sleep + 1_000)
 
@@ -352,7 +352,7 @@ defmodule ExtremeSubscriptionsTest do
     test "read events and stay subscribed for non existing stream is ok" do
       stream = Helpers.random_stream_name()
 
-      {:error, :no_stream, %ExMsg.ReadStreamEventsCompleted{}} =
+      {:error, :NoStream, %ExMsg.ReadStreamEventsCompleted{}} =
         TestConn.execute(Helpers.read_events(stream))
 
       # subscribe to existing stream
@@ -518,7 +518,7 @@ defmodule ExtremeSubscriptionsTest do
       {:ok, subscription} = TestConn.read_and_stay_subscribed(stream, subscriber, 0, 2)
 
       # assert :caught_up is received when existing events are read
-      assert_receive {:extreme, :error, :stream_deleted, ^stream}
+      assert_receive {:extreme, :error, :StreamDeleted, ^stream}
 
       # wait a bit for process to die
       :timer.sleep(10)

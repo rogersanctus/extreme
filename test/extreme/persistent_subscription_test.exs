@@ -62,9 +62,9 @@ defmodule Extreme.PersistentSubscriptionTest do
       group = random_subscription_group_name()
       events = random_events()
 
-      {:ok, %{result: :success}} = Helpers.write_events(stream, events) |> TestConn.execute()
+      {:ok, %{result: :Success}} = Helpers.write_events(stream, events) |> TestConn.execute()
 
-      {:ok, %{result: :success}} =
+      {:ok, %{result: :Success}} =
         Helpers.create_persistent_subscription(stream, group) |> TestConn.execute()
 
       on_exit(fn ->
@@ -208,7 +208,7 @@ defmodule Extreme.PersistentSubscriptionTest do
 
       assert_receive {:on_event, received_event, correlation_id}
       assert :erlang.binary_to_term(received_event.event.data) == Enum.at(c.events, 0)
-      send(subscriber, {:nack, received_event.event.event_id, correlation_id, :retry})
+      send(subscriber, {:nack, received_event.event.event_id, correlation_id, :Retry})
 
       assert_receive {:on_event, received_event, correlation_id}
       assert :erlang.binary_to_term(received_event.event.data) == Enum.at(c.events, 0)
@@ -231,7 +231,7 @@ defmodule Extreme.PersistentSubscriptionTest do
 
       assert_receive {:on_event, received_event, correlation_id}
       assert :erlang.binary_to_term(received_event.event.data) == Enum.at(c.events, 0)
-      send(subscriber, {:nack, received_event.event.event_id, correlation_id, :park})
+      send(subscriber, {:nack, received_event.event.event_id, correlation_id, :Park})
 
       assert_receive {:on_event, received_event, correlation_id}
       assert :erlang.binary_to_term(received_event.event.data) == Enum.at(c.events, 1)

@@ -50,7 +50,7 @@ defmodule Extreme.ReadOnlyTest do
 
       stream = Helpers.random_stream_name()
 
-      {:ok, %{result: :success}} =
+      {:ok, %{result: :Success}} =
         stream
         |> Helpers.write_events()
         |> TestConn.execute()
