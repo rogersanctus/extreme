@@ -28,6 +28,16 @@ defmodule Extreme do
       def ping,
         do: Extreme.RequestManager.ping(__MODULE__, Extreme.Tools.generate_uuid())
 
+      def read_events_backward(stream, start, count) do
+        Extreme.RequestManager.read_events_backward(
+          __MODULE__,
+          stream,
+          start,
+          count,
+          Extreme.Tools.generate_uuid()
+        )
+      end
+
       def execute(message, correlation_id \\ nil, timeout \\ 5_000) do
         Extreme.RequestManager.execute(
           __MODULE__,
@@ -67,8 +77,9 @@ defmodule Extreme do
         )
       end
 
-      def unsubscribe(subscription) when is_pid(subscription),
-        do: Extreme.Subscription.unsubscribe(subscription)
+      def unsubscribe(subscription) when is_pid(subscription) do
+        Extreme.Subscription.unsubscribe(subscription)
+      end
 
       def connect_to_persistent_subscription(
             subscriber,
