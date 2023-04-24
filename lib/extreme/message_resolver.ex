@@ -32,7 +32,7 @@ defmodule Extreme.MessageResolver do
 
   def encode_cmd(Msg.ReadEvent), do: 0xB0
   def encode_cmd(Msg.ReadStreamEvents), do: 0xB2
-  def encode_cmd(Msg.ReadStreamEventsBackward), do: 0xB4
+  def encode_cmd(:ReadStreamEventsBackward), do: 0xB4
   def encode_cmd(:read_all_events_forward), do: 0xB6
   def encode_cmd(:read_all_events_forward_completed), do: 0xB7
   def encode_cmd(:read_all_events_backward), do: 0xB8
@@ -82,7 +82,7 @@ defmodule Extreme.MessageResolver do
   def decode_cmd(0xC9), do: Msg.CreatePersistentSubscriptionCompleted
   def decode_cmd(0xCB), do: Msg.DeletePersistentSubscriptionCompleted
 
-  def decode_cmd(0xF0), do: :bad_request
-  def decode_cmd(0xF4), do: :not_authenticated
-  def decode_cmd(0xF6), do: :client_identified
+  def decode_cmd(0xF0), do: :BadRequest
+  def decode_cmd(0xF4), do: :NotAuthenticated
+  def decode_cmd(0xF6), do: :ClientIdentified
 end
