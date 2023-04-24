@@ -7,6 +7,7 @@ end
 defmodule ExtremeTest.Helpers do
   alias Extreme.Messages, as: ExMsg
   alias ExtremeTest.Events, as: Event
+  alias Extreme.ExpectedVersion
   require ExUnit.Assertions
   import ExUnit.Assertions
 
@@ -17,7 +18,8 @@ defmodule ExtremeTest.Helpers do
         events \\ [
           %Event.PersonCreated{name: "Pera Peric"},
           %Event.PersonChangedName{name: "Zika"}
-        ]
+        ],
+        expected_version \\ ExpectedVersion.any()
       ) do
     proto_events =
       Enum.map(events, fn event ->
@@ -33,17 +35,17 @@ defmodule ExtremeTest.Helpers do
 
     ExMsg.WriteEvents.new(
       event_stream_id: stream,
-      expected_version: -2,
+      expected_version: expected_version,
       events: proto_events,
-      require_master: false
+      require_leader: false
     )
   end
 
-  def delete_stream(stream, hard_delete) do
+  def delete_stream(stream, hard_delete, expected_version \\ ExpectedVersion.any()) do
     ExMsg.DeleteStream.new(
       event_stream_id: stream,
-      expected_version: -2,
-      require_master: false,
+      expected_version: expected_version,
+      require_leader: false,
       hard_delete: hard_delete
     )
   end
@@ -54,17 +56,7 @@ defmodule ExtremeTest.Helpers do
       from_event_number: start,
       max_count: count,
       resolve_link_tos: true,
-      require_master: false
-    )
-  end
-
-  def read_events_backward(stream, start, count) do
-    ExMsg.ReadStreamEventsBackward.new(
-      event_stream_id: stream,
-      from_event_number: start,
-      max_count: count,
-      resolve_link_tos: true,
-      require_master: false
+      require_leader: false
     )
   end
 
@@ -73,7 +65,7 @@ defmodule ExtremeTest.Helpers do
       event_stream_id: stream,
       event_number: position,
       resolve_link_tos: true,
-      require_master: false
+      require_leader: false
     )
   end
 
