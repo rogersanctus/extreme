@@ -35,14 +35,14 @@ defmodule Extreme.SharedSubscription do
   def unsubscribe(from, state) do
     message = Msg.UnsubscribeFromStream.new()
 
+    Process.put(:reply_to, from)
+
     spawn_link(fn ->
       state.base_name
       |> RequestManager.execute(message, state.correlation_id)
     end)
 
-    Process.put(:reply_to, from)
-
-    :ok
+    :noop
   end
 
   @doc """
@@ -84,9 +84,10 @@ defmodule Extreme.SharedSubscription do
     send(state.subscriber, {:extreme, reason})
     RequestManager._unregister_subscription(state.base_name, state.correlation_id)
 
-    case Process.get(:reply_to) do
-      nil -> :ok
-      from -> GenServer.reply(from, reason)
+    from = Process.get(:reply_to)
+
+    if not is_nil(from) do
+      GenServer.reply(from, :unsubscribed)
     end
 
     {:stop, {:shutdown, reason}, state}
