@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        elixir: ['1.12.3', '1.14.2']
+        elixir: ['1.12', '1.14']
         erlang: ['24.1', '25.2']
 
     services:
@@ -39,7 +39,6 @@ jobs:
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
-        version-type: strict
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
@@ -68,7 +67,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        elixir: ['1.12.3', '1.14.2']
+        elixir: ['1.12', '1.14']
         erlang: ['24.1', '25.2']
 
     services:
@@ -88,7 +87,6 @@ jobs:
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
-        version-type: strict
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
