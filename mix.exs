@@ -19,7 +19,8 @@ defmodule Extreme.Mixfile do
         "vcr.check": :test,
         "vcr.show": :test
       ],
-      deps: _deps()
+      deps: _deps(),
+      test_coverage: _test_coverage()
     ]
   end
 
@@ -43,10 +44,9 @@ defmodule Extreme.Mixfile do
 
       # testing
       {:exvcr, "~> 0.10", only: :test},
-      {:ex_doc, ">= 0.0.0", only: :dev}
-      # {:earmark, "~> 1.2", only: :test},
-      # {:inch_ex, "~> 1.0", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev},
       # {:excoveralls, "~> 0.9", only: :test},
+      {:credo, "~> 1.7", only: :dev}
     ]
   end
 
@@ -56,6 +56,12 @@ defmodule Extreme.Mixfile do
       maintainers: ["Milan Burmaja"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/exponentially/extreme"}
+    ]
+  end
+
+  defp _test_coverage do
+    [
+      summary: [threshold: 70]
     ]
   end
 end
