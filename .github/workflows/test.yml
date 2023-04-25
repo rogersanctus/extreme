@@ -16,7 +16,7 @@ env:
 jobs:
   ES-21:
     name: ES 21.10.9
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         elixir: ['1.12.3', '1.14.2']
@@ -65,7 +65,7 @@ jobs:
 
   ES-22:
     name: ES 22.10.0
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         elixir: ['1.12.3', '1.14.2']
