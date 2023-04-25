@@ -1,18 +1,21 @@
 name: Bless the code
 
 on: 
-  push: {}
+  push:
+    branches:
+      - main
+      - v1.0.0
   pull_request:
-      branches:
-        - main
-        - v1.0.0
+    branches:
+      - main
+      - v1.0.0
 env:
   MIX_ENV: test
   ES_VERSION: 4
 
 jobs:
   ES-21:
-    name: ES 21.10.0
+    name: ES 21.10.9
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,7 +24,7 @@ jobs:
 
     services:
       es:
-        image: eventstore/eventstore:21.6.0-buster-slim
+        image: eventstore/eventstore:21.10.9-buster-slim
         ports: ['1113:1113']
         env:
           EVENTSTORE_RUN_PROJECTIONS: "All"
@@ -32,10 +35,11 @@ jobs:
           EVENTSTORE_ENABLE_EXTERNAL_TCP: "true"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
+        version-type: strict
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
@@ -80,10 +84,11 @@ jobs:
           EVENTSTORE_ENABLE_EXTERNAL_TCP: "true"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
+        version-type: strict
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
