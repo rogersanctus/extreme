@@ -42,7 +42,7 @@ jobs:
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-deps-${{ matrix.elixir }}-${{ matrix.erlang }}-${{ hashFiles('mix.lock') }}
@@ -50,7 +50,7 @@ jobs:
     - name: Install dependencies
       run: mix deps.get
     - name: Restore builds cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: _build/test
         key: ${{ runner.os }}-build_test-${{ matrix.elixir }}-${{ matrix.erlang }}-${{ hashFiles('mix.lock') }}
@@ -90,7 +90,7 @@ jobs:
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.erlang }}
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-deps-${{ matrix.elixir }}-${{ matrix.erlang }}-${{ hashFiles('mix.lock') }}
@@ -98,7 +98,7 @@ jobs:
     - name: Install dependencies
       run: mix deps.get
     - name: Restore builds cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: _build/test
         key: ${{ runner.os }}-build_test-${{ matrix.elixir }}-${{ matrix.erlang }}-${{ hashFiles('mix.lock') }}
