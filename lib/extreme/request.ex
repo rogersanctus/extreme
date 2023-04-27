@@ -30,21 +30,17 @@ defmodule Extreme.Request do
     _to_binary(cmd, correlation_id, credentials, data)
   end
 
-  def prepare(:ReadStreamEventsBackward = cmd, credentials, correlation_id, %{
-        stream: stream,
-        start: start,
-        count: count
-      }) do
-    msg =
-      Extreme.Messages.ReadStreamEvents.new(
-        event_stream_id: stream,
-        from_event_number: start,
-        max_count: count,
-        resolve_link_tos: true,
-        require_leader: false
-      )
+  def prepare(:ReadStreamEventsForward, credentials, correlation_id, read_params)
+      when is_map(read_params) do
+    data = prepare_read_stream(read_params)
 
-    data = Extreme.Messages.ReadStreamEvents.encode(msg)
+    _to_binary(Extreme.Messages.ReadStreamEvents, correlation_id, credentials, data)
+  end
+
+  def prepare(:ReadStreamEventsBackward = cmd, credentials, correlation_id, read_params)
+      when is_map(read_params) do
+    data = prepare_read_stream(read_params)
+
     _to_binary(cmd, correlation_id, credentials, data)
   end
 
@@ -53,5 +49,20 @@ defmodule Extreme.Request do
     size = byte_size(res)
 
     {:ok, <<size::32-unsigned-little-integer>> <> res}
+  end
+
+  defp prepare_read_stream(%{
+         stream: stream,
+         start: start,
+         count: count
+       }) do
+    Extreme.Messages.ReadStreamEvents.new(
+      event_stream_id: stream,
+      from_event_number: start,
+      max_count: count,
+      resolve_link_tos: true,
+      require_leader: false
+    )
+    |> Extreme.Messages.ReadStreamEvents.encode()
   end
 end

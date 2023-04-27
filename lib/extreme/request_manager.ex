@@ -6,11 +6,15 @@ defmodule Extreme.RequestManager do
   @read_only_message_types [
     Extreme.Messages.ReadEvent,
     Extreme.Messages.ReadStreamEvents,
-    :ReadStreamEventsBackward,
     Extreme.Messages.ReadAllEvents,
     Extreme.Messages.ConnectToPersistentSubscription,
     Extreme.Messages.SubscribeToStream,
     Extreme.Messages.UnsubscribeFromStream
+  ]
+
+  @read_stream_events_direction [
+    :ReadStreamEventsBackward,
+    :ReadStreamEventsForward
   ]
 
   defmodule State do
@@ -177,6 +181,23 @@ defmodule Extreme.RequestManager do
       )
       when message_type not in @read_only_message_types do
     {:reply, {:error, :read_only}, state}
+  end
+
+  def handle_call(
+        {:execute, correlation_id, {direction, read_params}},
+        from,
+        %State{} = state
+      )
+      when is_atom(direction) and direction in @read_stream_events_direction do
+    state = %State{state | requests: Map.put(state.requests, correlation_id, from)}
+
+    _in_task(state.base_name, fn ->
+      {:ok, message} = Request.prepare(direction, state.credentials, correlation_id, read_params)
+
+      :ok = Connection.push(state.base_name, message)
+    end)
+
+    {:noreply, state}
   end
 
   def handle_call({:execute, correlation_id, message}, from, %State{} = state) do
