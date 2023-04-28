@@ -434,13 +434,13 @@ defmodule ExtremeTest do
       # We must check if the stream exists. And :NoStream means it does not exists.
       {:error, :NoStream, %ExMsg.ReadStreamEventsCompleted{}} =
         TestConn.execute(
-          ExMsg.ReadStreamEvents.new(
+          %ExMsg.ReadStreamEvents{
             event_stream_id: stream,
             from_event_number: 0,
             max_count: 1,
             resolve_link_tos: false,
             require_leader: false
-          )
+          }
         )
 
       # As of EventStore v22.10.1, when trying to delete from a non existing Stream,

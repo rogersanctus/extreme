@@ -12,10 +12,10 @@ defmodule Extreme.SharedSubscription do
   """
   def subscribe(state) do
     message =
-      Msg.SubscribeToStream.new(
+      %Msg.SubscribeToStream{
         event_stream_id: state.read_params.stream,
         resolve_link_tos: state.read_params.resolve_link_tos
-      )
+      }
 
     {:ok, subscription_confirmation} =
       state.base_name
@@ -33,7 +33,7 @@ defmodule Extreme.SharedSubscription do
   Response will arrive to subscription as push message.
   """
   def unsubscribe(from, state) do
-    message = Msg.UnsubscribeFromStream.new()
+    message = %Msg.UnsubscribeFromStream{}
 
     Process.put(:reply_to, from)
 

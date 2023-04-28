@@ -243,11 +243,11 @@ defmodule Extreme.PersistentSubscription do
 
   @impl true
   def handle_cast(:subscribe, state) do
-    Msg.ConnectToPersistentSubscription.new(
+    %Msg.ConnectToPersistentSubscription{
       subscription_id: state.group,
       event_stream_id: state.stream,
       allowed_in_flight_messages: state.allowed_in_flight_messages
-    )
+    }
     |> cast_request_manager(state.base_name, state.correlation_id)
 
     {:noreply, state}
@@ -258,29 +258,29 @@ defmodule Extreme.PersistentSubscription do
   end
 
   def handle_cast({:ack, events, correlation_id}, state) do
-    Msg.PersistentSubscriptionAckEvents.new(
+    %Msg.PersistentSubscriptionAckEvents{
       subscription_id: state.subscription_id,
       processed_event_ids: event_ids(events)
-    )
+    }
     |> cast_request_manager(state.base_name, correlation_id)
 
     {:noreply, state}
   end
 
   def handle_cast({:nack, events, correlation_id, action, message}, state) do
-    Msg.PersistentSubscriptionNakEvents.new(
+    %Msg.PersistentSubscriptionNakEvents{
       subscription_id: state.subscription_id,
       processed_event_ids: event_ids(events),
       action: action,
       message: message
-    )
+    }
     |> cast_request_manager(state.base_name, correlation_id)
 
     {:noreply, state}
   end
 
   def handle_cast(:unsubscribe, state) do
-    Msg.UnsubscribeFromStream.new()
+    %Msg.UnsubscribeFromStream{}
     |> cast_request_manager(state.base_name, state.correlation_id)
 
     {:noreply, state}

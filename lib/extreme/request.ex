@@ -17,10 +17,10 @@ defmodule Extreme.Request do
   end
 
   def prepare(:identify_client, connection_name, credentials) do
-    Extreme.Messages.IdentifyClient.new(
+    %Extreme.Messages.IdentifyClient{
       version: 1,
       connection_name: connection_name
-    )
+    }
     |> prepare(credentials, Tools.generate_uuid())
   end
 
@@ -56,13 +56,13 @@ defmodule Extreme.Request do
          start: start,
          count: count
        }) do
-    Extreme.Messages.ReadStreamEvents.new(
+    %Extreme.Messages.ReadStreamEvents{
       event_stream_id: stream,
       from_event_number: start,
       max_count: count,
       resolve_link_tos: true,
       require_leader: false
-    )
+    }
     |> Extreme.Messages.ReadStreamEvents.encode()
   end
 end

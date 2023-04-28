@@ -149,26 +149,25 @@ defmodule Extreme.ReadingSubscription do
   defp _read_events_message(%{from_event_number: from, per_page: per_page} = params, read_until)
        when from + per_page < read_until do
     result =
-      Msg.ReadStreamEvents.new(
+      %Msg.ReadStreamEvents{
         event_stream_id: params.stream,
         from_event_number: from,
         max_count: per_page,
         resolve_link_tos: params.resolve_link_tos,
-        require_master: params.require_master
-      )
+        require_leader: params.require_master}
 
     {result, true}
   end
 
   defp _read_events_message(params, read_until) do
     result =
-      Msg.ReadStreamEvents.new(
+      %Msg.ReadStreamEvents{
         event_stream_id: params.stream,
         from_event_number: params.from_event_number,
         max_count: read_until - params.from_event_number,
         resolve_link_tos: params.resolve_link_tos,
-        require_master: params.require_master
-      )
+        require_leader: params.require_master
+      }
 
     {result, false}
   end

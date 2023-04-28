@@ -23,50 +23,50 @@ defmodule ExtremeTest.Helpers do
       ) do
     proto_events =
       Enum.map(events, fn event ->
-        ExMsg.NewEvent.new(
+        %ExMsg.NewEvent{
           event_id: Extreme.Tools.generate_uuid(),
           event_type: to_string(event.__struct__),
           data_content_type: 0,
           metadata_content_type: 0,
           data: :erlang.term_to_binary(event),
           metadata: ""
-        )
+        }
       end)
 
-    ExMsg.WriteEvents.new(
+    %ExMsg.WriteEvents{
       event_stream_id: stream,
       expected_version: expected_version,
       events: proto_events,
       require_leader: false
-    )
+    }
   end
 
   def delete_stream(stream, hard_delete, expected_version \\ ExpectedVersion.any()) do
-    ExMsg.DeleteStream.new(
+    %ExMsg.DeleteStream{
       event_stream_id: stream,
       expected_version: expected_version,
       require_leader: false,
       hard_delete: hard_delete
-    )
+    }
   end
 
   def read_events(stream, start \\ 0, count \\ 1) do
-    ExMsg.ReadStreamEvents.new(
+    %ExMsg.ReadStreamEvents{
       event_stream_id: stream,
       from_event_number: start,
       max_count: count,
       resolve_link_tos: true,
       require_leader: false
-    )
+    }
   end
 
   def read_event(stream, position) do
-    ExMsg.ReadEvent.new(
+    %ExMsg.ReadEvent{
       event_stream_id: stream,
       event_number: position,
       resolve_link_tos: true,
       require_leader: false
-    )
+    }
   end
 
   def unsubscribe(extreme, subscription) do
@@ -105,7 +105,7 @@ defmodule ExtremeTest.Helpers do
   end
 
   def create_persistent_subscription(stream, group) do
-    ExMsg.CreatePersistentSubscription.new(
+    %ExMsg.CreatePersistentSubscription{
       subscription_group_name: group,
       event_stream_id: stream,
       resolve_link_tos: true,
@@ -121,13 +121,13 @@ defmodule ExtremeTest.Helpers do
       checkpoint_max_count: 500,
       checkpoint_min_count: 1,
       subscriber_max_count: 1
-    )
+    }
   end
 
   def delete_persistent_subscription(stream, group) do
-    ExMsg.DeletePersistentSubscription.new(
+    %ExMsg.DeletePersistentSubscription{
       subscription_group_name: group,
       event_stream_id: stream
-    )
+    }
   end
 end
