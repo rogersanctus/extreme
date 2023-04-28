@@ -11,11 +11,10 @@ defmodule Extreme.SharedSubscription do
   Sends subscription request and waits for positive response. Returns `{:ok, subscription_confirmation}`.
   """
   def subscribe(state) do
-    message =
-      %Msg.SubscribeToStream{
-        event_stream_id: state.read_params.stream,
-        resolve_link_tos: state.read_params.resolve_link_tos
-      }
+    message = %Msg.SubscribeToStream{
+      event_stream_id: state.read_params.stream,
+      resolve_link_tos: state.read_params.resolve_link_tos
+    }
 
     {:ok, subscription_confirmation} =
       state.base_name
